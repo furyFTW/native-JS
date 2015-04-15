@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Тестовое задание Softengi</title>
+    <link rel="stylesheet" href="bootstrap.css"/>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="page-header text-info">
+        <h1 style="text-align: center">Добро пожаловать на тестирование с арифметики</h1>
+    </div>
+    <ul class="nav nav-tabs" id="menu">
+        <li>
+            <a href="#setting">Установка</a>
+        </li>
+        <li><a href="#testing">Тестирование</a></li>
+        <li><a href="#sql">SQL Задание</a></li>
+    </ul>
+    <div class="row-fluid" id="view"></div>
+
+</div>
+<br>
+<pre style="display: none" id="sql">
+
+    /*Создаём таблицы*/
+    CREATE TABLE pupils (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(20),
+    );
+    CREATE TABLE testing (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_pupil INT(11),
+    type VARCHAR(5),
+    answer_correct INT(11),
+    answer_wrong INT(11),
+    cur_timestamp TIMESTAMP(8)
+    );
+    CREATE TABLE wrong_answer (
+    example VARCHAR(20),
+    answer_wrong INT(11),
+    );
+
+    /*Вносим данные в таблицу о завершении теста ученика*/
+    INSERT INTO pupils (pupil) VALUES ('user');
+    INSERT INTO testing (id_pupil,type,answer_correct,answer_wrong) VALUES (1,'+-/',7,5);
+    INSERT INTO wrong_answer (example,answer) VALUES ('10+1',12);
+
+    /*Делаем отчет*/
+    1) Показать учеников, прошедших тестирование за указанный период (имя, дата, типы  решённых примеров, кол-во правильно и неправильно решённых примеров, результат = % правильных ответов);
+    SELECT pupils.username,testing.cur_timestamp,testing.type,testing.answer_correct,testing.answer_wrong,(testing.answer_correct/(testing.answer_correct+testing.answer_wrong))*100 as result
+    FROM pupils,testing
+    WHERE pupils.id = testing.id_pupil AND testing.cur_timestamp >='период' AND testing.cur_timestamp <= 'период'
+
+    2) Показать учеников, ни разу за период не проходивших тестирование
+        SELECT username
+        FROM pupils
+        WHERE id NOT IN (SELECT DISTINCT(id_pupil) FROM testing )
+
+    3) Ученики, проходившие тестирование не менее трёх раз за указанный период, результат которых не превысил 50%
+        SELECT username
+        FROM pupils
+        WHERE (SELECT id_pupil
+                FROM testing
+                WHERE answer_wrong < 6 AND cur_timestamp >='период' AND cur_timestamp <= 'период'
+                GROUP BY id_pupil HAVING COUNT(id_pupil) >= 3 )
+
+</pre>
+<!--<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>-->
+<!--<script src="//maxcdn.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>-->
+<script src="app/app.js"></script>
+</body>
+</html>
